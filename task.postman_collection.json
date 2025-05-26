@@ -1,0 +1,307 @@
+{
+	"info": {
+		"_postman_id": "58501870-bc82-4585-8f7d-e23e9decea8c",
+		"name": "task",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "44783839",
+		"_collection_link": "https://emilio-2932839.postman.co/workspace/Emilio's-Workspace~9c8a3b1b-62e6-49c3-808e-b722243fe2a0/collection/44783839-58501870-bc82-4585-8f7d-e23e9decea8c?action=share&source=collection_link&creator=44783839"
+	},
+	"item": [
+		{
+			"name": "Obtener todas las tareas",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Verify the length of response data\r",
+							"pm.test(\"The response data length must be greater than zero\", function () {\r",
+							"    const responseData = pm.response.text();\r",
+							"    pm.expect(responseData.length).to.be.greaterThan(0, \"Response data should not be empty\");\r",
+							"});\r",
+							"var template = `\r",
+							"<canvas id=\"myChart\" height=\"75\"></canvas>\r",
+							"\r",
+							"<script src=\"https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js\"></script> \r",
+							"\r",
+							"<script>\r",
+							"    var ctx = document.getElementById(\"myChart\");\r",
+							"\r",
+							"    var myChart = new Chart(ctx, {\r",
+							"        type: \"bar\",\r",
+							"        data: {\r",
+							"            labels: [],\r",
+							"            datasets: [{\r",
+							"                data: [],\r",
+							"                \r",
+							"                // Change these colours to customize the chart\r",
+							"                backgroundColor: [\"#003f5c\", \"#58508d\", \"#bc5090\", \"#ff6361\", \"#ffa600\"],\r",
+							"            }]\r",
+							"        },\r",
+							"        options: {\r",
+							"            legend: { display: false },\r",
+							"            title: {\r",
+							"                display: true,\r",
+							"                text: 'Count'\r",
+							"            },\r",
+							"            scales: {\r",
+							"                xAxes: [{\r",
+							"                    display: true,\r",
+							"                    scaleLabel: {\r",
+							"                        display: true,\r",
+							"                        labelString: 'Items'\r",
+							"                    }\r",
+							"                }],\r",
+							"                yAxes: [{\r",
+							"                    display: true,\r",
+							"                    scaleLabel: {\r",
+							"                        display: true,\r",
+							"                        labelString: 'Count'\r",
+							"                    }\r",
+							"                }]\r",
+							"            }\r",
+							"        }\r",
+							"\r",
+							"    });\r",
+							"\r",
+							"    // Access the data passed to pm.visualizer.set() from the JavaScript\r",
+							"    // code of the Visualizer template\r",
+							"    pm.getData(function (err, value) {\r",
+							"        myChart.data.datasets[0].data = value.response.data;\r",
+							"        myChart.data.labels = value.response.labels;\r",
+							"        myChart.update();\r",
+							"    });\r",
+							"\r",
+							"</script>`;\r",
+							"\r",
+							"function constructVisualizerPayload() {\r",
+							"    var res = pm.response.json();\r",
+							"    \r",
+							"    var visualizerData = {\r",
+							"        \r",
+							"        // Labels take an array of strings\r",
+							"        labels: [],\r",
+							"        \r",
+							"        // Data takes an array of numbers\r",
+							"        data: []\r",
+							"    };\r",
+							"\r",
+							"    return {response: visualizerData};\r",
+							"}\r",
+							"\r",
+							"pm.visualizer.set(template, constructVisualizerPayload());"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8085/tasks",
+					"host": [
+						"localhost"
+					],
+					"port": "8085",
+					"path": [
+						"tasks"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Obtener tarea por id",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Crear una tarea",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var template = `\r",
+							"<style type=\"text/css\">\r",
+							"    .tftable {font-size:14px;color:#333333;width:100%;border-width: 1px;border-color: #87ceeb;border-collapse: collapse;}\r",
+							"    .tftable th {font-size:18px;background-color:#87ceeb;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;text-align:left;}\r",
+							"    .tftable tr {background-color:#ffffff;}\r",
+							"    .tftable td {font-size:14px;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;}\r",
+							"    .tftable tr:hover {background-color:#e0ffff;}\r",
+							"</style>\r",
+							"\r",
+							"<table class=\"tftable\" border=\"1\">\r",
+							"    <tr>\r",
+							"        <th>No tasks available</th>\r",
+							"    </tr>\r",
+							"</table>\r",
+							"`;\r",
+							"\r",
+							"function constructVisualizerPayload() {\r",
+							"    return {response: pm.response.json()}\r",
+							"}\r",
+							"\r",
+							"pm.visualizer.set(template, constructVisualizerPayload());"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"titulo\": \"Estudiar Spring\",\r\n  \"descripcion\": \"Repasar los conceptos de Spring Boot\",\r\n  \"fechaVencimiento\": \"2025-05-20\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8085/tasks",
+					"host": [
+						"localhost"
+					],
+					"port": "8085",
+					"path": [
+						"tasks"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Modificar una tarea",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"titulo\": \"Actualizar Spring Boot\",\r\n  \"descripcion\": \"Ver nuevas funciones\",\r\n  \"fechaVencimiento\": \"2025-05-25\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8085/tasks/2",
+					"host": [
+						"localhost"
+					],
+					"port": "8085",
+					"path": [
+						"tasks",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Borrar una tarea",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "localhost:8085/tasks/22",
+					"host": [
+						"localhost"
+					],
+					"port": "8085",
+					"path": [
+						"tasks",
+						"22"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Iniciar una tarea",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8085/tasks/1/iniciar",
+					"host": [
+						"localhost"
+					],
+					"port": "8085",
+					"path": [
+						"tasks",
+						"1",
+						"iniciar"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Obtener tareas pendientes",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Obtener tareas en progreso",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Obtener tareas completadas",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Tareas vencidas",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Tareas no vencidas",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Biscar por Título",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		}
+	]
+}

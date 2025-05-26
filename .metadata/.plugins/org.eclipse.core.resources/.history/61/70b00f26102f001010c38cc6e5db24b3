@@ -1,0 +1,72 @@
+package com.daw.web.controllers;
+
+import com.daw.persistence.entities.Task;
+import com.daw.services.TaskService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/tasks")
+public class TaskController {
+
+    @Autowired
+    private TaskService service;
+
+    @GetMapping
+    public ResponseEntity<List<Task>> getAll() {
+        return ResponseEntity.ok(this.service.findAll());
+    }
+
+    @GetMapping("/{id}")
+    public Task getById(@PathVariable int id) {
+        return service.findById(id);
+    }
+
+    @PostMapping
+    public Task create(@RequestBody Task task) {
+        return service.create(task);
+    }
+
+    @PutMapping("/{id}")
+    public Task update(@PathVariable int id, @RequestBody Task task) {
+        return service.update(id, task);
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable int id) {
+        service.delete(id);
+    }
+
+    @PatchMapping("/{id}/iniciar")
+    public Task iniciar(@PathVariable int id) {
+        return service.iniciar(id);
+    }
+
+    @PatchMapping("/{id}/completar")
+    public Task completar(@PathVariable int id) {
+        return service.completar(id);
+    }
+
+    @GetMapping("/estado/{estado}")
+    public List<Task> porEstado(@PathVariable String estado) {
+        return service.findByEstado(estado.toUpperCase());
+    }
+
+    @GetMapping("/vencidas")
+    public List<Task> vencidas() {
+        return service.vencidas();
+    }
+
+    @GetMapping("/no-vencidas")
+    public List<Task> noVencidas() {
+        return service.noVencidas();
+    }
+
+    @GetMapping("/buscar")
+    public List<Task> buscarPorTitulo(@RequestParam String titulo) {
+        return service.buscarPorTitulo(titulo);
+    }
+}

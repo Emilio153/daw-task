@@ -1,0 +1,92 @@
+package com.daw.services;
+
+import com.daw.persistence.entities.Task;
+import com.daw.persistence.entities.enums.Tipo;
+import com.daw.persistence.repositories.TaskRepository;
+import com.daw.services.exceptions.TaskNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.util.List;
+
+@Service
+public class TaskService {
+
+    @Autowired
+    private TaskRepository repository;
+
+    public List<Task> findAll() {
+        return repository.findAll();
+    }
+
+    public Task findById(int id) {
+        if (this.repository.existsById(id)) {
+        	throw new TaskNotFoundException("No existe la terea con el ID" + id);
+        }
+        return this.repository.findById(id).get();    }
+
+    public Task create(Task task) {
+        task.setFechaCreacion(LocalDate.now());
+        task.setEstado (Tipo.PENDIENTE);
+
+        if (task.getFechaVencimiento() == null || !task.getFechaVencimiento().isAfter(task.getFechaCreacion())) {
+            throw new IllegalArgumentException("La fecha de vencimiento debe ser posterior a la fecha de creación.");
+        }
+
+        return repository.save(task);
+    }
+
+    public Task update(int id, Task nueva) {
+        Task existente = findById(id);
+
+        existente.setTitulo(nueva.getTitulo());
+        existente.setDescripcion(nueva.getDescripcion());
+
+        if (nueva.getFechaVencimiento().isBefore(existente.getFechaCreacion())) {
+            throw new IllegalArgumentException("La fecha de vencimiento debe ser posterior a la fecha de creación.");
+        }
+
+        existente.setFechaVencimiento(nueva.getFechaVencimiento());
+
+        return repository.save(existente);
+    }
+
+    public void delete(int id) {
+        repository.deleteById(id);
+    }
+
+    public Task iniciar(int id) {
+        Task tarea = findById(id);
+        if (tarea.getEstado() != Tipo.PENDIENTE) {
+            throw new IllegalStateException("Solo se pueden iniciar tareas pendientes.");
+        }
+        tarea.setEstado(Tipo.EN_PROGRESO);
+        return repository.save(tarea);
+    }
+
+    public Task completar(int id) {
+        Task tarea = findById(id);
+        if (tarea.getEstado() !=Tipo.EN_PROGRESO) {
+            throw new IllegalStateException("Solo se pueden completar tareas en progreso.");
+        }
+        tarea.setEstado(Tipo.COMPLETADA);
+        return repository.save(tarea);
+    }
+
+    public List<Task> findByEstado(String estado) {
+        return repository.findByEstado(estado);
+    }
+
+    public List<Task> vencidas() {
+        return repository.findByFechaVencimientoBefore(LocalDate.now());
+    }
+
+    public List<Task> noVencidas() {
+        return repository.findByFechaVencimientoAfter(LocalDate.now());
+    }
+
+    public List<Task> buscarPorTitulo(String titulo) {
+        return repository.findByTituloContainingIgnoreCase(titulo);
+    }
+}
